@@ -42,27 +42,31 @@ app_ui = ui.page_fluid(
                 target="_blank"
             )
         ),
-        ui.layout_columns(
+        ui.layout_column_wrap(
             ui.card(
                 ui.h3("Data Table (shiny.output_table)"),
                 ui.output_table("table1"),
-                ui.hr(),
-                
-                ui.h3("Plotly Histogram"),
-                ui.output_plot("plotly_hist"),
-                
+                ui.hr()
+            ),
+            ui.card(
+               ui.h3("Plotly Histogram"),
+                ui.output_plot("plotly_hist") 
+            ),
+            ui.card(
                 ui.h3("Seaborn Histogram"),
-                ui.output_plot("seaborn_hist"),
-                
+                ui.output_plot("seaborn_hist")
+            ),
+            ui.card(
                 ui.h3("Plotly Scatterplot (Flipper Length vs Body Mass)"),
-                ui.output_plot("scatterplot") 
-            )
+                output_widget("scatterplot")
+            ),
+            width=1/2
         )
     )
 )
 
 def server(input, output, session):
-    
+
     @output
     @render.table
     def table1():
@@ -85,13 +89,13 @@ def server(input, output, session):
     @render.plot
     def seaborn_hist():
         plt.figure(figsize=(8, 4))
-        df = penguins_df.dropna(subset=[body_mass_g", "species"])
+        df = penguins_df.dropna(subset=["body_mass_g", "species"])
         sns.histplot(data=df, x="body_mass_g", hue="species", multiple="layer", bins=input.seaborn_bin_count())
         plt.title("Seaborn Histogram of Body Mass by Species")
         plt.xlabel("Body Mass (g)")
         plt.ylabel("Count")
         return plt.gcf()
-
+        
     @output
     @render_plotly
     def scatterplot():
